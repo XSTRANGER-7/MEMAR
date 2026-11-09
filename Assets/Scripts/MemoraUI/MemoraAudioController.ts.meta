@@ -1,0 +1,70 @@
+- !<AssetImportMetadata/cbf50ae6-8c32-492e-8ef7-8e51011934f1>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 097301b2-5c22-4c62-a9f3-510f51462584
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 097301b2-5c22-4c62-a9f3-510f51462584
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 37312df4-ec8e-4ffa-9cfe-a1eb6e9eaeb9
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/37312df4-ec8e-4ffa-9cfe-a1eb6e9eaeb9>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: ad1d7574-50fe-431e-bf92-108d38d62f57
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    doneSound: false
+    foundSound: false
+    openSound: false
+    savedSound: false
+    scanSound: false
+    volume: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - doneSound: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      savedSound: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      openSound: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      foundSound: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      scanSound: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      volume: 0.700000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MemoraAudioController – pinch feedback sounds</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">References</span>"}'
+    - '// @ui {"widget":"group_start", "label":"References"}'
+    - '// @input Asset.AudioTrackAsset doneSound {"hint":"Played when a memory is marked done"}'
+    - '// @input Asset.AudioTrackAsset savedSound {"hint":"Played when a new memory is saved"}'
+    - '// @input Asset.AudioTrackAsset openSound {"hint":"Played when the memory card opens on an object"}'
+    - '// @input Asset.AudioTrackAsset foundSound {"hint":"Played when look-to-detect locks onto an object"}'
+    - '// @input Asset.AudioTrackAsset scanSound {"hint":"Played when Scan sweeps the area"}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Settings</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Settings"}'
+    - '// @input float volume = 0.6 {"hint":"Volume for all MEMORA sounds", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @ui {"widget":"group_end"}'

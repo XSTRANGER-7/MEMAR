@@ -1,0 +1,48 @@
+- !<AssetImportMetadata/b5db88f5-1ba3-44b0-bbd0-2bafd5708ef8>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 4a9c579b-e878-484a-8a6f-3c384e990893
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 4a9c579b-e878-484a-8a6f-3c384e990893
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 45e8e913-b8ce-4fed-9170-e3fc066fb0f7
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/45e8e913-b8ce-4fed-9170-e3fc066fb0f7>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 8fc5ff75-ee79-4c33-9192-411c434f31c4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MemoraTodayStripUI – desk-edge summary, Scan / Detect / Done / Help buttons, zone hints</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #94A3B8; font-size: 11px;\">Size and colours: THEME.strip in MemoraThemeUI.ts</span>"}'

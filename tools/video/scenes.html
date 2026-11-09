@@ -1,0 +1,518 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MEMAR video scenes</title>
+<!-- Animated scenes for the MEMAR demo video. tools/video/render_html.js calls window.setTime(t) for every
+     frame. window.PARAMS picks the scene: door | kitchen | desk (illustrated concept POV through SPECS),
+     usecases (feature montage), sim (live web-simulator recording in a phone frame). -->
+<style>
+  :root { --ink:#F4F7FC; --dim:#A9B4C6; --cyan:#5CE1FF; --orange:#F08A5D; --green:#2E9D62; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; width:1920px; height:1080px; overflow:hidden; background:#0A1330; font-family:'Segoe UI', sans-serif; color:var(--ink); }
+  #stage { position:absolute; inset:0; overflow:hidden; }
+  #world { position:absolute; left:-90px; top:-50px; width:2100px; height:1180px; transform-origin:50% 50%; }
+  #world > svg { position:absolute; left:0; top:0; }
+  .ar { position:absolute; opacity:0; will-change:transform, opacity; }
+  .vig { position:absolute; inset:0; pointer-events:none;
+         background: radial-gradient(ellipse 72% 78% at 50% 47%, rgba(0,0,0,0) 58%, rgba(4,7,14,.62) 100%);
+         box-shadow: inset 0 0 140px rgba(0,0,0,.35); }
+  .hud { position:absolute; left:44px; top:36px; display:flex; align-items:center; gap:14px; padding:12px 22px 12px 18px;
+         border-radius:999px; background:rgba(8,12,22,.62); border:1.5px solid rgba(255,255,255,.18); font:600 24px 'Segoe UI'; letter-spacing:.5px; }
+  .hud i { width:14px; height:14px; border-radius:50%; background:var(--cyan); box-shadow:0 0 14px var(--cyan); }
+  .hud span { color:var(--dim); font-weight:400; }
+  .brand { position:absolute; display:flex; align-items:center; gap:14px; font:700 34px Bahnschrift, 'Segoe UI'; letter-spacing:3px; }
+  .brand img { width:46px; height:46px; }
+  .brand b { background:linear-gradient(135deg,#8CF5FF,#3D7BFF); -webkit-background-clip:text; color:transparent; }
+  .cap { position:absolute; left:0; right:0; bottom:0; padding:20px 210px 40px; background:rgba(8,11,16,.72);
+         font:350 38px/50px 'Segoe UI'; text-align:center; color:var(--ink); opacity:0; }
+
+  /* AR elements (match the Lens: orange count badges, cyan detection, slate cards, green Done) */
+  .badge { width:54px; height:54px; margin:-27px 0 0 -27px; border-radius:50%; text-align:center; font:700 29px/54px 'Segoe UI'; color:#fff;
+           background:radial-gradient(circle at 35% 30%, #FFB896, #F08A5D 55%, #D8633A);
+           box-shadow:0 0 0 4px rgba(255,255,255,.9), 0 0 30px rgba(240,138,93,.85); }
+  .ret { border:0; }
+  .ret b { position:absolute; width:46px; height:46px; border:5px solid var(--cyan); filter:drop-shadow(0 0 8px rgba(92,225,255,.9)); }
+  .ret b:nth-child(1) { left:0; top:0; border-right:0; border-bottom:0; border-top-left-radius:14px; }
+  .ret b:nth-child(2) { right:0; top:0; border-left:0; border-bottom:0; border-top-right-radius:14px; }
+  .ret b:nth-child(3) { left:0; bottom:0; border-right:0; border-top:0; border-bottom-left-radius:14px; }
+  .ret b:nth-child(4) { right:0; bottom:0; border-left:0; border-top:0; border-bottom-right-radius:14px; }
+  .chip { white-space:nowrap; padding:11px 24px; border-radius:999px; background:rgba(12,20,36,.86); border:2px solid rgba(92,225,255,.8);
+          font:600 27px 'Segoe UI'; color:#E8FBFF; box-shadow:0 0 28px rgba(92,225,255,.35); backdrop-filter:blur(8px); }
+  .chip span { color:#9FB3CC; font-weight:400; }
+  .card { width:470px; padding:22px 22px 18px; border-radius:28px; background:rgba(26,34,50,.88); border:1.5px solid rgba(255,255,255,.16);
+          box-shadow:0 24px 70px rgba(0,0,0,.5), 0 0 44px rgba(92,225,255,.14); backdrop-filter:blur(14px); transform-origin:50% 100%; }
+  .card h4 { margin:0; font:700 32px 'Segoe UI'; }
+  .card .sub { font:400 21px 'Segoe UI'; color:var(--dim); margin-top:2px; }
+  .row { display:flex; gap:12px; margin-top:14px; transform-origin:50% 0; }
+  .row .txt { flex:1; background:rgba(92,110,146,.55); border-radius:18px; padding:12px 18px; }
+  .row .t { font:600 25px/32px 'Segoe UI'; }
+  .row .m { font:600 19px 'Segoe UI'; color:#FF9C7A; margin-top:2px; }
+  .row .m.med { color:#F4CF62; }
+  .row .m .tag { display:inline-block; margin-left:8px; padding:1px 10px; border-radius:999px; background:rgba(92,225,255,.18); color:#9FEFFF; }
+  .row .ok { width:70px; border-radius:18px; background:var(--green); display:flex; align-items:center; justify-content:center; font:700 32px 'Segoe UI'; color:#fff; }
+  .toast { margin-top:14px; padding:12px 16px; border-radius:16px; background:rgba(46,157,98,.25); border:1.5px solid rgba(46,157,98,.8);
+           font:600 22px 'Segoe UI'; display:flex; justify-content:space-between; opacity:0; }
+  .toast b { color:#9FEFFF; }
+  .leave li { list-style:none; display:flex; align-items:center; gap:14px; margin-top:12px; padding:10px 14px; border-radius:16px; background:rgba(92,110,146,.45); font:600 23px 'Segoe UI'; }
+  ul.leave { margin:8px 0 0; padding:0; }
+  .leave li i { width:26px; height:26px; border-radius:50%; border:3px solid #FFB896; flex:none; }
+  .leave li span { color:var(--dim); font-weight:400; }
+  .pinch { width:0; height:0; }
+  .pinch b { position:absolute; width:22px; height:22px; margin:-11px; border-radius:50%; background:#fff; box-shadow:0 0 16px rgba(92,225,255,1); }
+  .pinch u { position:absolute; width:80px; height:80px; margin:-40px; border-radius:50%; border:4px solid var(--cyan); opacity:0; }
+
+  /* Branded backgrounds */
+  .navy { position:absolute; inset:0; background:linear-gradient(135deg,#101D42 0%,#081028 60%,#040816 100%); }
+  .navy::before { content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.035) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.035) 2px, transparent 2px); background-size:50px 50px; }
+  .navy::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 75% 20%, rgba(50,214,255,.16), transparent 50%), radial-gradient(circle at 15% 85%, rgba(61,123,255,.14), transparent 50%); }
+  .kicker { position:absolute; font:600 26px 'Segoe UI'; letter-spacing:4px; color:var(--cyan); }
+  .title { position:absolute; font:700 64px 'Segoe UI'; }
+  .tile { position:absolute; width:530px; height:262px; padding:26px 28px; border-radius:30px; background:rgba(22,32,58,.78);
+          border:1.5px solid rgba(255,255,255,.12); box-shadow:0 18px 50px rgba(0,0,0,.35); opacity:0; }
+  .tile.on { border-color:rgba(92,225,255,.85); box-shadow:0 18px 50px rgba(0,0,0,.35), 0 0 40px rgba(92,225,255,.25); }
+  .tile .hd { display:flex; align-items:center; gap:18px; }
+  .tile .ic { width:64px; height:64px; border-radius:20px; background:linear-gradient(135deg,rgba(140,245,255,.25),rgba(61,123,255,.25)); display:flex; align-items:center; justify-content:center; }
+  .tile .ic svg { width:36px; height:36px; fill:none; stroke:#9FEFFF; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .tile h5 { margin:0; font:700 34px 'Segoe UI'; }
+  .tile .obj { margin-top:20px; font:600 20px 'Segoe UI'; letter-spacing:2px; color:var(--orange); text-transform:uppercase; }
+  .tile .mem { margin-top:4px; font:600 28px/36px 'Segoe UI'; }
+  .tile .tg { margin-top:8px; font:400 22px 'Segoe UI'; color:var(--dim); }
+
+  .phone { position:absolute; left:1330px; top:58px; width:462px; height:964px; padding:16px; border-radius:62px; background:#0B0F16;
+           border:2px solid #2A3344; box-shadow:0 30px 90px rgba(0,0,0,.6), 0 0 60px rgba(92,225,255,.12); }
+  .phone img { display:block; width:430px; height:932px; border-radius:46px; }
+  .steps { position:absolute; left:110px; top:430px; width:1080px; }
+  .step { display:flex; align-items:center; gap:22px; padding:16px 24px; margin-bottom:12px; border-radius:20px; font:600 32px 'Segoe UI'; color:#7F8BA3;
+          border-left:6px solid transparent; }
+  .step .n { width:46px; height:46px; border-radius:50%; border:2.5px solid #4A5672; display:flex; align-items:center; justify-content:center; font:700 22px 'Segoe UI'; flex:none; }
+  .step.on { color:var(--ink); background:rgba(92,225,255,.10); border-left-color:var(--cyan); }
+  .step.on .n { border-color:var(--cyan); color:var(--cyan); }
+  .step.done { color:#B9C4D8; }
+  .step.done .n { border-color:var(--green); background:var(--green); color:#fff; }
+  .live { position:absolute; left:110px; top:150px; display:flex; align-items:center; gap:12px; font:600 24px 'Segoe UI'; letter-spacing:3px; color:#FF6B6B; }
+  .live i { width:16px; height:16px; border-radius:50%; background:#FF4D4D; box-shadow:0 0 14px #FF4D4D; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+const P = Object.assign({ scene: "door", dur: 12, segs: [{ at: 0.6, d: 6 }, { at: 7.2, d: 3.6 }], captions: [] }, window.PARAMS || {})
+const stage = document.getElementById("stage")
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const easeOut = (x) => 1 - Math.pow(1 - clamp(x), 3)
+const easeInOut = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2 }
+const easeBack = (x) => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2) }
+const seg = (i) => P.segs[Math.min(i, P.segs.length - 1)]
+const cue = (i, f = 0) => seg(i).at + f * seg(i).d
+const $ = (s, root = stage) => root.querySelector(s)
+
+// Fade/scale an element in at t0 (and optionally out at t1).
+function pop(el, t, t0, o = {}) {
+  const { dur = 0.45, from = 0.6, y = 14, back = true, t1 = null, out = 0.35 } = o
+  const p = clamp((t - t0) / dur)
+  const e = back ? easeBack(p) : easeOut(p)
+  let op = clamp(p * 1.8)
+  if (t1 !== null) op *= 1 - clamp((t - t1) / out)
+  el.style.opacity = op
+  el.style.transform = `translateY(${(1 - e) * y}px) scale(${from + (1 - from) * e})`
+}
+function place(html, x, y, cls = "") {
+  const d = document.createElement("div")
+  d.className = "ar " + cls
+  d.style.left = x + "px"
+  d.style.top = y + "px"
+  d.innerHTML = html
+  $("#ar").appendChild(d)
+  return d
+}
+function reticle(x, y, w, h) {
+  const r = place("<b></b><b></b><b></b><b></b>", x, y, "ret")
+  r.style.width = w + "px"
+  r.style.height = h + "px"
+  r.dataset.w = w
+  r.dataset.h = h
+  return r
+}
+// Reticle: appears large and eases onto the object, then holds.
+function lockOn(r, t, t0, t1 = null) {
+  const p = easeOut((t - t0) / 0.7)
+  const s = 1.35 - 0.35 * p
+  let op = clamp((t - t0) / 0.2)
+  if (t1 !== null) op *= 1 - clamp((t - t1) / 0.3)
+  r.style.opacity = t < t0 ? 0 : op
+  r.style.transform = `scale(${s})`
+}
+function captions(t) {
+  const c = $("#cap")
+  if (!c) return
+  let cur = null
+  for (const k of P.captions) if (t >= k.start - 0.05 && t <= k.end + 0.35) cur = k
+  if (!cur) { c.style.opacity = 0; return }
+  if (c.textContent !== cur.text) c.textContent = cur.text
+  c.style.opacity = clamp((t - cur.start + 0.05) / 0.15) * (1 - clamp((t - cur.end - 0.2) / 0.15))
+}
+function memRow(title, meta, cls = "", tag = "") {
+  return `<div class="row"><div class="txt"><div class="t">${title}</div><div class="m ${cls}">${meta}${tag ? `<span class="tag">${tag}</span>` : ""}</div></div><div class="ok">✓</div></div>`
+}
+const BRAND_ICON = "../../media/brand/memar-icon-128.png"
+
+// ── Illustrated worlds (2100 × 1180, seen through the glasses) ────────────────────────────
+const DEFS = `<defs>
+  <filter id="blur10"><feGaussianBlur stdDeviation="10"/></filter>
+  <filter id="blur24"><feGaussianBlur stdDeviation="24"/></filter>
+  <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A6243"/><stop offset="1" stop-color="#5E4130"/></linearGradient>
+  <linearGradient id="woodLight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BE9269"/><stop offset="1" stop-color="#93694A"/></linearGradient>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E6EAEE"/><stop offset=".55" stop-color="#C4CBD3"/><stop offset="1" stop-color="#DADFE4"/></linearGradient>
+</defs>`
+
+function doorWorld() {
+  return `<svg width="2100" height="1180" viewBox="0 0 2100 1180">${DEFS}
+  <defs>
+    <linearGradient id="wallW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1E8DA"/><stop offset="1" stop-color="#DCCDB8"/></linearGradient>
+    <linearGradient id="floorW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#94704F"/><stop offset="1" stop-color="#5A3F2D"/></linearGradient>
+    <linearGradient id="doorG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#335C6E"/><stop offset="1" stop-color="#274857"/></linearGradient>
+    <radialGradient id="sunW" cx=".18" cy=".1" r=".9"><stop offset="0" stop-color="#FFF4DC" stop-opacity=".55"/><stop offset="1" stop-color="#FFF4DC" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="2100" height="940" fill="url(#wallW)"/>
+  <polygon points="80,60 600,60 860,820 340,820" fill="#FFFFFF" opacity=".16"/>
+  <rect y="900" width="2100" height="40" fill="#EDE6DA"/><rect y="938" width="2100" height="4" fill="#CBBDA8"/>
+  <rect y="942" width="2100" height="238" fill="url(#floorW)"/>
+  <g stroke="#3E2A1D" stroke-opacity=".35" stroke-width="3"><path d="M0 1000H2100M0 1070H2100M0 1145H2100"/><path d="M260 942V1000M900 942V1000M1600 942V1000M520 1000V1070M1240 1000V1070M1880 1000V1070M140 1070V1145M760 1070V1145M1420 1070V1145"/></g>
+  <!-- picture -->
+  <rect x="404" y="226" width="320" height="236" fill="#2F2F33"/><rect x="418" y="240" width="292" height="208" fill="#FBF8F2"/>
+  <circle cx="640" cy="300" r="34" fill="#F2A65A"/><polygon points="430,440 540,320 620,400 660,360 700,440" fill="#6C8C83"/>
+  <!-- console table -->
+  <ellipse cx="580" cy="948" rx="350" ry="16" fill="#000" opacity=".22" filter="url(#blur10)"/>
+  <rect x="300" y="700" width="22" height="240" fill="#4A3122"/><rect x="838" y="700" width="22" height="240" fill="#4A3122"/>
+  <rect x="290" y="644" width="580" height="60" fill="#5A3D29"/><rect x="300" y="652" width="560" height="4" fill="#000" opacity=".18"/>
+  <rect x="268" y="606" width="624" height="40" rx="6" fill="url(#wood)"/><rect x="268" y="606" width="624" height="6" rx="3" fill="#A27654"/>
+  <!-- tray + keys -->
+  <ellipse cx="470" cy="604" rx="104" ry="17" fill="#C9C1B5"/><ellipse cx="470" cy="600" rx="92" ry="12" fill="#DDD6CB"/>
+  <circle cx="450" cy="594" r="15" fill="none" stroke="#C3C9CF" stroke-width="5"/>
+  <g transform="rotate(-10 470 596)"><rect x="462" y="590" width="58" height="11" rx="5" fill="#CDD2D7"/><rect x="500" y="598" width="6" height="8" fill="#CDD2D7"/><rect x="510" y="598" width="5" height="6" fill="#CDD2D7"/></g>
+  <g transform="rotate(14 430 598)"><rect x="404" y="588" width="34" height="20" rx="8" fill="#E2553F"/><circle cx="414" cy="598" r="3" fill="#fff" opacity=".7"/></g>
+  <!-- wallet -->
+  <rect x="604" y="576" width="140" height="34" rx="9" fill="#6B3F2A"/><rect x="612" y="582" width="124" height="22" rx="6" fill="none" stroke="#C99A73" stroke-width="2" stroke-dasharray="6 5"/>
+  <!-- plant -->
+  <path d="M820 540 C780 470 790 430 812 400 M820 540 C840 460 870 440 900 430 M820 540 C800 500 760 480 740 470" stroke="#3E7D55" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <ellipse cx="808" cy="410" rx="30" ry="16" transform="rotate(-60 808 410)" fill="#4E9A67"/><ellipse cx="892" cy="436" rx="32" ry="15" transform="rotate(-15 892 436)" fill="#4E9A67"/><ellipse cx="748" cy="472" rx="30" ry="14" transform="rotate(25 748 472)" fill="#5BAA72"/>
+  <rect x="790" y="530" width="64" height="76" rx="10" fill="#E6E0D6"/>
+  <!-- door -->
+  <rect x="1046" y="126" width="488" height="816" fill="#000" opacity=".12" filter="url(#blur10)"/>
+  <rect x="1050" y="130" width="480" height="812" fill="#F7F3EC"/>
+  <rect x="1090" y="170" width="400" height="772" fill="url(#doorG)"/>
+  <rect x="1132" y="214" width="316" height="290" rx="6" fill="none" stroke="#1B3440" stroke-width="7"/><rect x="1138" y="220" width="304" height="278" rx="5" fill="none" stroke="#FFFFFF" stroke-opacity=".12" stroke-width="3"/>
+  <rect x="1132" y="560" width="316" height="330" rx="6" fill="none" stroke="#1B3440" stroke-width="7"/><rect x="1138" y="566" width="304" height="318" rx="5" fill="none" stroke="#FFFFFF" stroke-opacity=".12" stroke-width="3"/>
+  <circle cx="1142" cy="530" r="17" fill="#D8B25A"/><rect x="1142" y="523" width="62" height="14" rx="7" fill="#E2BE68"/>
+  <rect x="1600" y="500" width="44" height="70" rx="6" fill="#F7F3EC" stroke="#D4C8B5" stroke-width="2"/>
+  <!-- umbrella stand -->
+  <ellipse cx="985" cy="944" rx="60" ry="10" fill="#000" opacity=".25" filter="url(#blur10)"/>
+  <path d="M968 610 Q986 560 1004 610 L994 800 L978 800 Z" fill="#1F3B70"/><path d="M986 590 L990 790" stroke="#0F2550" stroke-width="3"/>
+  <path d="M980 600 L980 520 Q980 488 952 488 Q928 488 928 514" stroke="#6B4A33" stroke-width="13" fill="none" stroke-linecap="round"/>
+  <rect x="940" y="770" width="92" height="172" rx="12" fill="#3C4A57"/><ellipse cx="986" cy="772" rx="46" ry="9" fill="#55646F"/>
+  <rect width="2100" height="1180" fill="url(#sunW)"/>
+</svg>`
+}
+
+function kitchenWorld() {
+  return `<svg width="2100" height="1180" viewBox="0 0 2100 1180">${DEFS}
+  <defs>
+    <linearGradient id="wallK" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E5EBE4"/><stop offset="1" stop-color="#D2DBD2"/></linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9D4F2"/><stop offset="1" stop-color="#E9F5FC"/></linearGradient>
+    <linearGradient id="floorK" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFC9BF"/><stop offset="1" stop-color="#ADA69B"/></linearGradient>
+    <pattern id="tiles" width="64" height="34" patternUnits="userSpaceOnUse"><rect width="64" height="34" fill="#F3F4F0"/><path d="M0 0H64M0 0V34" stroke="#000" stroke-opacity=".07" stroke-width="2"/></pattern>
+    <radialGradient id="sunK" cx=".2" cy=".2" r=".8"><stop offset="0" stop-color="#FFFBEA" stop-opacity=".5"/><stop offset="1" stop-color="#FFFBEA" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bottle" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6FB6E6"/><stop offset=".4" stop-color="#A9DAF7"/><stop offset="1" stop-color="#5A9FD0"/></linearGradient>
+  </defs>
+  <rect width="2100" height="960" fill="url(#wallK)"/>
+  <!-- window -->
+  <rect x="250" y="110" width="480" height="330" fill="#F8F8F5"/><rect x="270" y="130" width="440" height="290" fill="url(#sky)"/>
+  <ellipse cx="380" cy="380" rx="140" ry="40" fill="#9CC79A" opacity=".8"/><ellipse cx="600" cy="400" rx="160" ry="36" fill="#86B887" opacity=".8"/>
+  <rect x="484" y="130" width="12" height="290" fill="#F8F8F5"/><rect x="270" y="268" width="440" height="12" fill="#F8F8F5"/>
+  <rect x="236" y="436" width="508" height="18" fill="#EFEDE7"/>
+  <!-- upper cabinets -->
+  <rect x="820" y="100" width="500" height="270" fill="#F6F5F1"/><path d="M1070 100V370" stroke="#D8D5CD" stroke-width="4"/>
+  <rect x="1040" y="290" width="8" height="50" rx="4" fill="#9AA3AB"/><rect x="1092" y="290" width="8" height="50" rx="4" fill="#9AA3AB"/>
+  <rect x="820" y="370" width="500" height="10" fill="#000" opacity=".06"/>
+  <!-- backsplash + counter -->
+  <rect x="0" y="454" width="1370" height="168" fill="url(#tiles)"/>
+  <rect x="0" y="650" width="1370" height="292" fill="#F3F1EC"/>
+  <g stroke="#D9D5CC" stroke-width="4"><path d="M340 650V942M690 650V942M1030 650V942"/></g>
+  <g fill="#9AA3AB"><rect x="300" y="690" width="10" height="60" rx="5"/><rect x="370" y="690" width="10" height="60" rx="5"/><rect x="650" y="690" width="10" height="60" rx="5"/><rect x="720" y="690" width="10" height="60" rx="5"/><rect x="990" y="690" width="10" height="60" rx="5"/><rect x="1060" y="690" width="10" height="60" rx="5"/></g>
+  <rect x="0" y="940" width="1370" height="22" fill="#2E2E2E" opacity=".75"/>
+  <rect x="0" y="618" width="1380" height="34" rx="4" fill="#DAD4CA"/><rect x="0" y="618" width="1380" height="6" fill="#ECE8E1"/>
+  <rect x="0" y="962" width="2100" height="218" fill="url(#floorK)"/>
+  <g stroke="#000" stroke-opacity=".07" stroke-width="3"><path d="M0 1040H2100M0 1120H2100M300 962V1180M800 962V1180M1300 962V1180M1800 962V1180"/></g>
+  <!-- fruit bowl -->
+  <circle cx="420" cy="580" r="34" fill="#F39C3D"/><circle cx="480" cy="574" r="36" fill="#F7A84A"/><circle cx="450" cy="548" r="30" fill="#D64545"/><rect x="448" y="512" width="4" height="12" fill="#5B3A1E"/>
+  <path d="M340 588 Q450 650 560 588 Z" fill="#E9E4DC"/><path d="M340 588 Q450 600 560 588" stroke="#CFC8BC" stroke-width="3" fill="none"/>
+  <!-- medicine box -->
+  <polygon points="826,542 950,542 968,528 844,528" fill="#F3F6F7"/><rect x="826" y="542" width="124" height="78" fill="#FFFFFF"/><polygon points="950,542 968,528 968,606 950,620" fill="#DCE3E6"/>
+  <rect x="868" y="556" width="40" height="12" fill="#1F9A94"/><rect x="882" y="544" width="12" height="36" fill="#1F9A94"/>
+  <text x="888" y="606" text-anchor="middle" font-family="Segoe UI" font-weight="700" font-size="17" fill="#2D3E48">VIT D</text>
+  <!-- water bottle -->
+  <rect x="1050" y="466" width="56" height="154" rx="20" fill="url(#bottle)"/><rect x="1058" y="446" width="40" height="26" rx="6" fill="#2B3A4A"/><rect x="1062" y="490" width="8" height="110" rx="4" fill="#fff" opacity=".45"/>
+  <!-- mug -->
+  <rect x="1180" y="550" width="74" height="70" rx="10" fill="#F5D46B"/><path d="M1254 566 Q1286 574 1254 604" stroke="#F5D46B" stroke-width="10" fill="none"/>
+  <!-- fridge -->
+  <rect x="1394" y="134" width="396" height="832" fill="#000" opacity=".14" filter="url(#blur10)"/>
+  <rect x="1400" y="140" width="384" height="822" rx="22" fill="url(#steel)"/>
+  <rect x="1400" y="418" width="384" height="6" fill="#9AA4AE"/>
+  <rect x="1432" y="290" width="16" height="104" rx="8" fill="#A8B1BB"/><rect x="1432" y="450" width="16" height="240" rx="8" fill="#A8B1BB"/>
+  <rect x="1420" y="160" width="8" height="240" rx="4" fill="#fff" opacity=".5"/>
+  <rect width="2100" height="1180" fill="url(#sunK)"/>
+</svg>`
+}
+
+function deskWorld() {
+  return `<svg width="2100" height="1180" viewBox="0 0 2100 1180">${DEFS}
+  <defs>
+    <linearGradient id="wallD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E1E5EC"/><stop offset="1" stop-color="#C9D0DA"/></linearGradient>
+    <linearGradient id="deskTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B98D64"/><stop offset="1" stop-color="#94694A"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20406A"/><stop offset="1" stop-color="#1C1F44"/></linearGradient>
+    <linearGradient id="lapBase" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D3D8DF"/><stop offset="1" stop-color="#A9B0BA"/></linearGradient>
+    <radialGradient id="lamp" cx=".2" cy=".45" r=".5"><stop offset="0" stop-color="#FFE9B8" stop-opacity=".55"/><stop offset="1" stop-color="#FFE9B8" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowScreen" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#6FA8FF" stop-opacity=".35"/><stop offset="1" stop-color="#6FA8FF" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="2100" height="700" fill="url(#wallD)"/>
+  <!-- shelf with books -->
+  <rect x="170" y="250" width="540" height="16" fill="#8D6A4F"/>
+  <g><rect x="200" y="150" width="34" height="100" fill="#C9583E"/><rect x="238" y="166" width="28" height="84" fill="#3F6FA8"/><rect x="270" y="140" width="38" height="110" fill="#E3B34C"/><rect x="312" y="172" width="26" height="78" fill="#4E8A6E"/>
+  <rect x="352" y="186" width="120" height="22" fill="#8C5D9E"/><rect x="346" y="208" width="132" height="22" fill="#D77A61"/><rect x="356" y="230" width="112" height="20" fill="#3F6FA8"/></g>
+  <rect x="560" y="196" width="60" height="54" rx="8" fill="#E6E0D6"/><ellipse cx="590" cy="186" rx="40" ry="22" fill="#5BAA72"/>
+  <!-- poster -->
+  <rect x="1500" y="140" width="300" height="250" fill="#2F2F33"/><rect x="1512" y="152" width="276" height="226" fill="#F4F1EA"/>
+  <circle cx="1600" cy="250" r="56" fill="#5CE1FF" opacity=".55"/><circle cx="1680" cy="280" r="62" fill="#F08A5D" opacity=".55"/>
+  <!-- desk -->
+  <polygon points="60,640 2040,640 2300,1000 -200,1000" fill="url(#deskTop)"/>
+  <rect x="0" y="1000" width="2100" height="40" fill="#7B5639"/><rect x="0" y="1040" width="2100" height="140" fill="#2D2A28"/>
+  <rect width="2100" height="1040" fill="url(#lamp)"/>
+  <!-- lamp -->
+  <ellipse cx="330" cy="736" rx="80" ry="16" fill="#3A3A3E"/><path d="M330 730 L380 520 L250 430" stroke="#3A3A3E" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M210 400 L300 380 L320 450 L230 470 Z" fill="#3A3A3E"/>
+  <!-- mug -->
+  <rect x="470" y="704" width="80" height="96" rx="12" fill="#FFFFFF"/><path d="M550 724 Q588 740 550 776" stroke="#FFFFFF" stroke-width="11" fill="none"/>
+  <ellipse cx="510" cy="706" rx="40" ry="8" fill="#6B4A33"/>
+  <!-- keys -->
+  <g><circle cx="600" cy="842" r="15" fill="none" stroke="#C3C9CF" stroke-width="5"/><g transform="rotate(12 620 846)"><rect x="612" y="840" width="58" height="11" rx="5" fill="#CDD2D7"/><rect x="650" y="848" width="6" height="8" fill="#CDD2D7"/></g>
+  <rect x="566" y="834" width="32" height="20" rx="8" fill="#3D7BFF"/></g>
+  <!-- laptop -->
+  <ellipse cx="1050" cy="880" rx="420" ry="26" fill="#000" opacity=".28" filter="url(#blur10)"/>
+  <rect x="700" y="380" width="700" height="460" fill="url(#glowScreen)"/>
+  <rect x="760" y="416" width="580" height="384" rx="16" fill="#1A1E26"/>
+  <rect x="780" y="436" width="540" height="344" rx="6" fill="url(#screen)"/>
+  <g fill="#FFFFFF"><rect x="810" y="466" width="200" height="16" rx="8" opacity=".75"/><rect x="810" y="506" width="420" height="10" rx="5" opacity=".35"/><rect x="810" y="530" width="380" height="10" rx="5" opacity=".35"/><rect x="810" y="554" width="440" height="10" rx="5" opacity=".35"/>
+  <rect x="810" y="600" width="230" height="120" rx="12" opacity=".14"/><rect x="1060" y="600" width="230" height="120" rx="12" opacity=".14"/></g>
+  <polygon points="736,800 1364,800 1430,866 670,866" fill="url(#lapBase)"/>
+  <polygon points="780,808 1320,808 1360,846 740,846" fill="#9AA2AD" opacity=".55"/>
+  <rect x="960" y="848" width="180" height="12" rx="6" fill="#8D96A2" opacity=".6"/>
+  <!-- notebook -->
+  <g transform="rotate(-6 1600 812)"><rect x="1480" y="770" width="240" height="86" rx="8" fill="#2F5D50"/><rect x="1690" y="770" width="10" height="86" fill="#E7C24A"/><rect x="1480" y="770" width="240" height="8" rx="4" fill="#3F7566"/></g>
+</svg>`
+}
+
+// ── Scene builders ───────────────────────────────────────────────────────────────────────
+const S = {}
+
+function povFrame(world, label) {
+  stage.innerHTML = `<div id="world">${world}<div id="ar"></div></div><div class="vig"></div>
+    <div class="hud"><i></i>CONCEPT MOCKUP <span>· how MEMAR could feel on SPECS</span></div>
+    <div class="brand" style="right:48px;top:40px"><img src="${BRAND_ICON}"><span>MEM<b>AR</b></span></div>
+    <div class="cap" id="cap"></div>`
+}
+function drift(t, a, b) {
+  const p = easeInOut(t / P.dur)
+  const x = a[0] + (b[0] - a[0]) * p, y = a[1] + (b[1] - a[1]) * p, s = a[2] + (b[2] - a[2]) * p
+  $("#world").style.transform = `translate(${x}px, ${y}px) scale(${s})`
+}
+
+S.door = {
+  build() {
+    povFrame(doorWorld())
+    this.bK = place("1", 455, 548, "badge")
+    this.bW = place("1", 674, 552, "badge")
+    this.bU = place("1", 952, 450, "badge")
+    this.ret = reticle(385, 560, 160, 70)
+    this.chip = place(`Keys · 1 memory <span>— pinch to open</span>`, 360, 680, "chip")
+    this.card = place(`<h4>Keys</h4><div class="sub">1 pending</div>${memRow("Collect the parcel before leaving", "High · Today")}`, 250, 270, "card")
+    this.leave = place(`<h4>Before you leave</h4><div class="sub">On the things you carry</div><ul class="leave">
+        <li id="l1"><i></i>Keys <span>· Collect the parcel</span></li>
+        <li id="l2"><i></i>Umbrella <span>· Rain after 5 PM</span></li>
+        <li id="l3"><i></i>Wallet <span>· Library card</span></li></ul>`, 1095, 232, "card")
+    this.leave.style.width = "430px"
+  },
+  set(t) {
+    drift(t, [70, 10, 1.0], [-70, -6, 1.05])
+    pop(this.bK, t, 0.4); pop(this.bW, t, 0.55); pop(this.bU, t, 0.7)
+    lockOn(this.ret, t, cue(0, 0.42), cue(1, 0) - 0.2)
+    pop(this.chip, t, cue(0, 0.42) + 0.65, { t1: cue(0, 0.7) })
+    pop(this.card, t, cue(0, 0.7), { y: 30, from: 0.8, t1: cue(1, 0) + 0.2 })
+    pop(this.leave, t, cue(1, 0) + 0.15, { y: 30, from: 0.8 })
+    ;["#l1", "#l2", "#l3"].forEach((s, i) => pop($(s), t, cue(1, 0) + 0.45 + i * 0.22, { y: 10, from: 0.9, back: false }))
+    const hl = clamp((t - cue(1, 0.45)) / 0.3)
+    $("#l2").style.background = `rgba(92,225,255,${0.12 + hl * 0.2})`
+    $("#l2").style.boxShadow = hl > 0 ? `0 0 0 2px rgba(92,225,255,${hl * 0.8})` : "none"
+    const pulse = t > cue(1, 0.45) ? 1 + 0.18 * Math.max(0, Math.sin((t - cue(1, 0.45)) * 7)) * Math.exp(-(t - cue(1, 0.45)) * 1.5) : 1
+    if (t > 1.2) this.bU.style.transform = `scale(${pulse})`
+  },
+}
+
+S.kitchen = {
+  build() {
+    povFrame(kitchenWorld())
+    this.bM = place("1", 896, 492, "badge")
+    this.bF = place("1", 1590, 178, "badge")
+    this.ret = reticle(800, 508, 196, 132)
+    this.chip = place(`Medicine box · 1 memory <span>— pinch to open</span>`, 700, 660, "chip")
+    this.card = place(`<h4>Medicine box</h4><div class="sub">1 pending</div>${memRow("Take vitamin D after lunch", "Medium · Today 2:00 PM", "med", "↻ Daily")}`, 330, 238, "card")
+    this.fchip = place(`Fridge · <span>Buy milk on the way back</span>`, 1352, 470, "chip")
+  },
+  set(t) {
+    drift(t, [60, 6, 1.0], [-80, -4, 1.05])
+    pop(this.bM, t, 0.4); pop(this.bF, t, 0.6)
+    lockOn(this.ret, t, cue(0, 0.18), cue(0, 0.55) + 0.6)
+    pop(this.chip, t, cue(0, 0.18) + 0.65, { t1: cue(0, 0.5) })
+    pop(this.card, t, cue(0, 0.5), { y: 30, from: 0.8 })
+    pop(this.fchip, t, cue(1, 0.15), { y: 16 })
+    const pulse = t > cue(1, 0.15) ? 1 + 0.2 * Math.max(0, Math.sin((t - cue(1, 0.15)) * 7)) * Math.exp(-(t - cue(1, 0.15)) * 1.5) : 1
+    if (t > 1.2) this.bF.style.transform = `scale(${pulse})`
+  },
+}
+
+S.desk = {
+  build() {
+    povFrame(deskWorld())
+    this.bL = place("2", 1340, 398, "badge")
+    this.bK = place("1", 588, 792, "badge")
+    this.ret = reticle(744, 400, 612, 476)
+    this.chip = place(`Laptop · 2 memories <span>— pinch to open</span>`, 820, 900, "chip")
+    this.card = place(`<h4>Laptop</h4><div class="sub" id="dsub">2 pending</div>
+      <div id="r1">${memRow("Submit the project report", "High · Today 5:00 PM")}</div>
+      ${memRow("Reply to the internship email", "Medium · No due date", "med")}
+      <div class="toast" id="dtoast"><span>Done ✓</span><b>Undo</b></div>`, 1400, 300, "card")
+    this.pinch = place(`<b id="pa"></b><b id="pb"></b><u id="pu"></u>`, 0, 0, "pinch")
+  },
+  set(t) {
+    drift(t, [0, 10, 1.0], [-60, -20, 1.07])
+    pop(this.bL, t, 0.4); pop(this.bK, t, 0.6)
+    lockOn(this.ret, t, cue(0, 0.2), cue(0, 0.55) + 0.5)
+    pop(this.chip, t, cue(0, 0.2) + 0.65, { t1: cue(0, 0.52) })
+    pop(this.card, t, cue(0, 0.5), { y: 30, from: 0.8 })
+    // Pinch on Done of the first row.
+    const tp = cue(1, 0) + 0.2
+    const ok = this.card.querySelector("#r1 .ok")
+    const bx = 1400 + 22 + 470 - 44 - 35, by = 300 + 105 + 40
+    this.pinch.style.left = bx + "px"
+    this.pinch.style.top = by + "px"
+    const pin = clamp((t - tp) / 0.25) * (1 - clamp((t - tp - 1.3) / 0.3))
+    this.pinch.style.opacity = pin
+    const close = easeOut((t - tp - 0.2) / 0.45)
+    $("#pa").style.transform = `translate(${-34 + 30 * close}px, ${-30 + 26 * close}px)`
+    $("#pb").style.transform = `translate(${34 - 30 * close}px, ${30 - 26 * close}px)`
+    const rp = clamp((t - tp - 0.65) / 0.5)
+    $("#pu").style.opacity = rp > 0 && rp < 1 ? 1 - rp : 0
+    $("#pu").style.transform = `scale(${0.5 + rp})`
+    const hit = t > tp + 0.65
+    ok.style.background = hit ? "#43C985" : ""
+    ok.style.boxShadow = hit ? "0 0 26px rgba(67,201,133,.9)" : ""
+    const gone = easeOut((t - tp - 1.0) / 0.4)
+    const r1 = $("#r1")
+    r1.style.opacity = 1 - gone
+    r1.style.maxHeight = (1 - gone) * 110 + "px"
+    r1.style.overflow = "hidden"
+    $("#dtoast").style.opacity = clamp((t - tp - 1.2) / 0.3)
+    $("#dsub").textContent = t > tp + 1.0 ? "1 pending" : "2 pending"
+    this.bL.textContent = t > tp + 1.0 ? "1" : "2"
+    if (t > tp + 1.0) {
+      const k = t - tp - 1.0
+      this.bL.style.transform = `scale(${1 + 0.25 * Math.max(0, Math.sin(k * 9)) * Math.exp(-k * 3)})`
+    }
+  },
+}
+
+const ICONS = {
+  repeat: `<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>`,
+  bag: `<rect x="4" y="8" width="16" height="12" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>`,
+  clock: `<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>`,
+  cart: `<path d="M3 4h2l2.5 11h10l2-8H6.2"/><circle cx="9" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/>`,
+  door: `<rect x="6" y="3" width="12" height="18" rx="1"/><circle cx="15" cy="12" r="1"/><path d="M3 21h18"/>`,
+  mic: `<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>`,
+}
+const TILES = [
+  ["repeat", "Daily routines", "Medicine box", "Take vitamin D after lunch", "↻ Every day · 2:00 PM"],
+  ["bag", "Things you forget", "Bag", "Pack the laptop charger", "Shows up on the bag"],
+  ["clock", "Deadlines", "Laptop", "Submit the project report", "High · Today 5:00 PM"],
+  ["cart", "Errands", "Fridge", "Buy milk on the way back", "Right where you'll see it"],
+  ["door", "Before you leave", "Front door", "Keys · Wallet · Umbrella", "One check at the door"],
+  ["mic", "Hands-free", "Any object", "“Remind me to print the lab report”", "Look · Pinch · Say it"],
+]
+S.usecases = {
+  build() {
+    stage.innerHTML = `<div class="navy"></div>
+      <div class="brand" style="left:110px;top:56px"><img src="${BRAND_ICON}"><span>MEM<b>AR</b></span></div>
+      <div class="kicker" id="uk" style="left:0;right:0;top:118px;text-align:center">WHAT MEMAR REMEMBERS FOR YOU</div>
+      <div class="title" id="ut" style="left:0;right:0;top:156px;text-align:center">A quiet assistant for your whole day</div>
+      ${TILES.map((x, i) => `<div class="tile" id="t${i}" style="left:${135 + (i % 3) * 565}px;top:${284 + Math.floor(i / 3) * 296}px">
+        <div class="hd"><div class="ic"><svg viewBox="0 0 24 24">${ICONS[x[0]]}</svg></div><h5>${x[1]}</h5></div>
+        <div class="obj">${x[2]}</div><div class="mem">${x[3]}</div><div class="tg">${x[4]}</div></div>`).join("")}
+      <div class="cap" id="cap"></div>`
+  },
+  set(t) {
+    pop($("#uk"), t, 0.2, { back: false, from: 1 })
+    pop($("#ut"), t, 0.35, { back: false, from: 0.96 })
+    for (let i = 0; i < 6; i++) {
+      const el = $("#t" + i)
+      pop(el, t, cue(i + 1, 0) - 0.15, { y: 30, from: 0.85 })
+      const on = t >= cue(i + 1, 0) - 0.15 && (i === 5 ? t < P.dur : t < cue(i + 2, 0) - 0.15)
+      el.classList.toggle("on", on)
+    }
+  },
+}
+
+S.sim = {
+  build() {
+    const steps = ["Open the laptop · Done · Undo", "Add from a preset", "Say it: one sentence, a clean title", "A daily routine comes back tomorrow", "Before you leave · Done list"]
+    stage.innerHTML = `<div class="navy"></div>
+      <div class="brand" style="left:110px;top:56px"><img src="${BRAND_ICON}"><span>MEM<b>AR</b></span></div>
+      <div class="live"><i></i>LIVE · RECORDED IN REAL TIME</div>
+      <div class="title" style="left:106px;top:196px">Watch it work</div>
+      <div style="position:absolute;left:110px;top:292px;font:400 32px 'Segoe UI';color:#A9B4C6;width:1080px">Web simulator, running the same memory engine as the Lens.<br>No glasses needed: it runs on a phone.</div>
+      <div class="steps">${steps.map((s, i) => `<div class="step" id="s${i}"><div class="n">${i + 1}</div>${s}</div>`).join("")}</div>
+      <div class="cap" id="cap" style="padding-right:760px;padding-left:110px"></div>
+      <div class="phone"><img id="scr"></div>`
+    this.frames = P.frames
+    this.cur = -1
+  },
+  async set(t) {
+    const tr = P.recStart + t * P.speed
+    let lo = 0, hi = this.frames.length - 1
+    while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (this.frames[mid].t <= tr) lo = mid; else hi = mid - 1 }
+    if (lo !== this.cur) {
+      this.cur = lo
+      const img = $("#scr")
+      img.src = "file:///" + this.frames[lo].f
+      await img.decode()
+    }
+    for (let i = 0; i < 5; i++) {
+      const el = $("#s" + i)
+      const a = P.steps[i], b = i < 4 ? P.steps[i + 1] : 1e9
+      el.classList.toggle("on", t >= a && t < b)
+      el.classList.toggle("done", t >= b)
+    }
+  },
+}
+
+const scene = S[P.scene]
+scene.build()
+window.setTime = async (t) => {
+  await scene.set(t)
+  captions(t)
+}
+Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode().catch(() => {}))]).then(async () => {
+  await window.setTime(0)
+  window.READY = true
+})
+</script>
+</body>
+</html>

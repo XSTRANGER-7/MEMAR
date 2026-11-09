@@ -1,0 +1,74 @@
+- !<AssetImportMetadata/3e300dde-0719-4132-a751-f8ed4d6e8b1f>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> e56d8bb8-c632-4027-aba4-4720099f1b52
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> e56d8bb8-c632-4027-aba4-4720099f1b52
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 1b467aa1-13de-4ca6-bed1-91c1281b0d51
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/1b467aa1-13de-4ca6-bed1-91c1281b0d51>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: a4f233e8-22d6-4eb5-a69d-94edb5a1fc9d
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    addIcon: false
+    backIcon: false
+    closeIcon: false
+    deleteIcon: false
+    doneIcon: false
+    micIcon: false
+    priorityIcon: false
+    undoIcon: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - closeIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      addIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      backIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      doneIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      undoIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      deleteIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      priorityIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      micIcon: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MemoraCardUI – memory card shown beside the selected object</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Icons</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Icons"}'
+    - '// @input Asset.Texture closeIcon {"hint":"Close (X) button icon"}'
+    - '// @input Asset.Texture addIcon {"hint":"+ Add button icon"}'
+    - '// @input Asset.Texture backIcon {"hint":"Back button icon"}'
+    - '// @input Asset.Texture doneIcon {"hint":"Done (tick) button icon"}'
+    - '// @input Asset.Texture undoIcon {"hint":"Undo button icon"}'
+    - '// @input Asset.Texture deleteIcon {"hint":"Delete button icon"}'
+    - '// @input Asset.Texture priorityIcon {"hint":"Priority button icon"}'
+    - '// @input Asset.Texture micIcon {"hint":"Speak (microphone) button icon"}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #94A3B8; font-size: 11px;\">Size, colours, text scale and timings: THEME.card in MemoraThemeUI.ts</span>"}'

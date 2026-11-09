@@ -1,0 +1,49 @@
+- !<AssetImportMetadata/05cb7c12-11de-4d25-948e-5f10b213b779>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 970db482-efa2-4cf0-bfe6-f6b1412a617a
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 970db482-efa2-4cf0-bfe6-f6b1412a617a
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 95be01a5-4d7d-42d4-b1c7-48d964efc62c
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/95be01a5-4d7d-42d4-b1c7-48d964efc62c>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: cf433db6-4610-4ec3-8945-6f69d58ddc40
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    resetOnStart: false
+    seedDemoData: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - seedDemoData: true
+      resetOnStart: false
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @input bool seedDemoData = true {"hint":"Seed four sample memories when storage is empty (keeps the first recall from being blank)"}'
+    - '// @input bool resetOnStart {"hint":"Start empty every launch. Use while recording takes or running LEAF"}'

@@ -1,0 +1,54 @@
+- !<AssetImportMetadata/bcff1540-1ac7-4277-8ee6-e1d9993fb313>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 61789cd0-95ce-47dd-94e3-3dabc6bb406b
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 61789cd0-95ce-47dd-94e3-3dabc6bb406b
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 200ca39d-469f-47ff-a091-e5784530b47e
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/200ca39d-469f-47ff-a091-e5784530b47e>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: ce9b77e5-a542-41e1-9518-680fe7dd4b95
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    faceUser: false
+    objectId: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - objectId: laptop
+      faceUser: true
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">MemoraBadgeUI – pending count above a stand-in</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">Settings</span>"}'
+    - '// @ui {"widget":"group_start", "label":"Settings"}'
+    - '// @input string objectId {"hint":"Object id this badge counts (an id from MEMORA_OBJECTS). Set by MemoraStandIn; MemoraMain pushes the count."}'
+    - '// @input bool faceUser = true {"hint":"Turn the badge to face the user as they move"}'
+    - '// @ui {"widget":"group_end"}'

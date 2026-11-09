@@ -1,0 +1,10 @@
+{
+  "name": "memora-core-tests",
+  "private": true,
+  "description": "Node tests for MEMORA's memory engine (Assets/Scripts/Memora). Lens Studio does not use this file.",
+  "scripts": {
+    "test": "npx -y -p typescript@5.6.3 tsc -p tests/tsconfig.test.json && node --test tests/memora-store.test.js tests/memora-detector.test.js tests/memora-features.test.js tests/memora-daily.test.js",
+    "sim": "node tools/build-web-sim.js",
+    "sim:serve": "node tools/build-web-sim.js && python -m http.server 8080 --directory web-sim"
+  }
+}

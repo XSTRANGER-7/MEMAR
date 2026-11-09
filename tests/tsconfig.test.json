@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2021", "module": "commonjs", "lib": ["es2021"], "strict": true,
+    "isolatedModules": true, "outDir": "../.test-build", "rootDir": "..", "types": [], "skipLibCheck": true
+  },
+  "files": [
+    "lens-shim.d.ts",
+    "../Assets/Scripts/Memora/MemoraTypes.ts",
+    "../Assets/Scripts/Memora/MemoraObjects.ts",
+    "../Assets/Scripts/Memora/MemoraSampleData.ts",
+    "../Assets/Scripts/Memora/MemoraStore.ts",
+    "../Assets/Scripts/Memora/MemoraStorage.ts",
+    "../Assets/Scripts/Memora/MemoraDetector.ts",
+    "../Assets/Scripts/Memora/MemoraVoice.ts"
+  ]
+}
